@@ -1,0 +1,41 @@
+.container {
+  max-width: 36rem;
+  padding: 0 1rem;
+  margin: auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 116px;
+  @media screen and (max-width: 64rem) {
+    height: unset;
+  }
+}
+
+.header-logo {
+  margin: auto;
+}
+
+.nav {
+  ul {
+    display: flex;
+    column-gap: 34px;
+    font-size: 13px;
+  }
+}
+
+.pcOnly {
+  display: block;
+  @media screen and (max-width: 64rem) {
+    display: none;
+  }
+}
+
+.mobileOnly {
+  display: none;
+  @media screen and (max-width: 64rem) {
+    display: block;
+  }
+}
