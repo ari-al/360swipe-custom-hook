@@ -2,6 +2,11 @@ let params;
 
 params.framesCount = 120;
 
+deltaDif = Math.ceil(delta / (GESTURE_DELTA / 2));
+countFrames += deltaDif;
+
+frameCount = 0;
+
 var animateFrames = function () {
   if (animDirection == 1) {
     curFrame++;
