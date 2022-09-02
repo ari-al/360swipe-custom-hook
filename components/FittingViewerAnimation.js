@@ -218,7 +218,7 @@ const FittingViewerAnimation = () => {
         onTouchEnd={handleMouseup}
       />
       <Container className="fitting">
-        {allImageLoaded || <h1>LOADING</h1>}
+        {!allImageLoaded && <h1>LOADING</h1>}
         <canvas ref={canvasRef} height={100} width={100} />
       </Container>
     </>
