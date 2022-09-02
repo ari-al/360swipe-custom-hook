@@ -17,6 +17,7 @@ const FittingViewerAnimation = () => {
   const [slideImageObjects, setSlideImageObjects] = useState([]);
   const sliderRef = useRef();
   const [currentPositionX, setCurrentPositionX] = useState();
+  const [allImageLoaded, setAllImageLoaded] = useState(false);
 
   const ctx = useRef();
   const canvasRef = useRef();
@@ -63,10 +64,17 @@ const FittingViewerAnimation = () => {
     lastIndex.current = imageArray.length - 1;
 
     const imageObjects = [];
-    imageArray.forEach((item) => {
+    let loadedImageCounter = 0;
+    imageArray.forEach((item, index) => {
       const image = new Image();
       image.src = item;
       imageObjects.push(image);
+      imageObjects[index].onload = function () {
+        if (loadedImageCounter === imageArray.length - 1) {
+          setAllImageLoaded(true);
+        }
+        loadedImageCounter++;
+      };
     });
     setSlideImageObjects([...imageObjects]);
     setCanvasSize();
@@ -88,7 +96,7 @@ const FittingViewerAnimation = () => {
   }, [slideImageObjects]);
 
   const handleMousedown = useCallback((event) => {
-    setCurrentPositionX(event.clientX);
+    setCurrentPositionX(event.clientX || event.touches[0].clientX);
     setAnimationStopTrigger(true);
   }, []);
 
@@ -98,7 +106,7 @@ const FittingViewerAnimation = () => {
 
   const handleMousemove = (event, deltaX = 10, speed = 1.4) => {
     if (currentPositionX > 0) {
-      const mouseClientX = event.clientX;
+      const mouseClientX = event.clientX || event.touches[0].clientX;
       const diff = mouseClientX - currentPositionX;
       const setFrameStatus = () => {
         intentedFrame.current += Math.abs(
@@ -205,8 +213,12 @@ const FittingViewerAnimation = () => {
         onMouseMove={handleMousemove}
         onMouseUp={handleMouseup}
         onMouseOut={handleFocusout}
+        onTouchStart={handleMousedown}
+        onTouchMove={handleMousemove}
+        onTouchEnd={handleMouseup}
       />
       <Container className="fitting">
+        {allImageLoaded || <h1>LOADING</h1>}
         <canvas ref={canvasRef} height={100} width={100} />
       </Container>
     </>
@@ -220,6 +232,7 @@ const Slider = styled.div`
   top: 0;
   left: 0;
   z-index: 10;
+  touch-action: none;
 `;
 
 const Container = styled.div`
