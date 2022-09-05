@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import ProductInfo from "./ProductInfo";
-import FittingViewerAnimation from "./FittingViewerAnimation";
+import FittingViewerSwipeable from "./FittingViewerSwipeable";
 
 const Product = (props) => {
   return (
     <section>
       <Container className="product">
         <Container className="product-left">
-          <FittingViewerAnimation />
+          <FittingViewerSwipeable />
         </Container>
         <Container className="product-right">
           <ProductInfo />
