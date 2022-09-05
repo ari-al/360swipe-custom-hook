@@ -50,15 +50,16 @@ const FittingViewerSwipeable = () => {
         intentedFrame.current += Math.abs(
           Math.ceil(diff / (deltaX / (2 * eventData.velocity)))
         );
-        console.log(intentedFrame);
         lastConnectToStart();
       };
       let swipingLeft = false;
       let swipingRight = false;
-      if (diff > 0) {
+      if (deltaX > 0) {
         swipingRight = true;
-      } else if (diff < 0) {
+        swipingLeft = false;
+      } else if (deltaX < 0) {
         swipingLeft = true;
+        swipingRight = false;
       }
       if (Math.abs(diff) > deltaX) {
         setCurrentPositionX(mouseClientX);
@@ -122,11 +123,10 @@ const FittingViewerSwipeable = () => {
       if (frameCount.current < intentedFrame.current) {
         //console.log(frameCount.current);
         setTimeout(() => {
-          console.log(`frameCount : ${frameCount.current}`);
           window.requestAnimationFrame(function () {
             redraw(left, right, deceleration);
           });
-        }, deceleration);
+        }, 10);
       } else {
         intentedFrame.current = 0;
         frameCount.current = 0;
