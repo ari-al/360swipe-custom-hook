@@ -14,7 +14,7 @@ function getFittingImageArray() {
   return fittingImageArray;
 }
 
-const FittingViewerSwipeable = () => {
+const FittingViewerWithoutAnimation = () => {
   const [slideImageObjects, setSlideImageObjects] = useState([]);
   const sliderRef = useRef();
   const [currentPositionX, setCurrentPositionX] = useState(0);
@@ -29,47 +29,86 @@ const FittingViewerSwipeable = () => {
   const velocity = useRef(0);
   const flag = useRef(false);
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [delta, setDelta] = useState(0);
+
   const configswipeable = {
     preventDefaultTouchmoveEvent: false, // call e.preventDefault *See Details*
     trackTouch: true, // track touch input
     trackMouse: true, // track mouse input
     rotationAngle: 0, // set a rotation angle
   };
+  const speed = 0.4; // adjust swipe speed
+
+  const intentedFrame = useRef(0);
+  const currentFrame = useRef(0);
+  const frameCount = useRef(0);
 
   const handlers = useSwipeable({
     onSwiped: (eventData) => {
-      //setDelta(0);
-      flag.current = true;
+      setDelta(0);
+      intentedFrame.current = 0;
     },
-    onSwiping: (eventData, deltaX = 10, speed = 1.4) => {
-      flag.current = false;
-      velocity.current = eventData.velocity;
-      const mouseClientX = eventData.deltaX;
-      const diff = mouseClientX - currentPositionX;
-      const setFrameStatus = () => {
+    onSwiping: (eventData) => {
+      const diff = delta - eventData.deltaX;
+      if (Math.abs(diff) > 5) {
+        let start = 0;
+        let end = slideImageObjects.length - 1;
+        let index = currentIndex - Math.round((diff / 5) * eventData.velocity);
         intentedFrame.current += Math.abs(
-          Math.ceil(diff / (deltaX / (2 * eventData.velocity)))
+          Math.round((diff / 5) * eventData.velocity)
         );
-        lastConnectToStart();
-      };
-      let swipingLeft = false;
-      let swipingRight = false;
 
-      if (mouseClientX > 0) {
-        swipingRight = true;
-        swipingLeft = false;
-      } else if (mouseClientX < 0) {
-        swipingLeft = true;
-        swipingRight = false;
-      }
-      if (Math.abs(diff) > deltaX) {
-        setCurrentPositionX(mouseClientX);
-        setFrameStatus();
-        redraw(swipingLeft, swipingRight);
+        if (index < start) {
+          index = end;
+        } else if (index > end) {
+          index = start;
+        }
+        setCurrentIndex(index);
+        setDelta(eventData.deltaX);
+        drawCanvas();
       }
     },
     ...configswipeable,
   });
+
+  function drawCanvas() {
+    const animating = () => {
+      console.log(`start animating : ${intentedFrame.current}`);
+      if (frameCount.current < intentedFrame.current) {
+        setTimeout(() => {
+          window.requestAnimationFrame(function () {
+            redraw(left, right);
+          });
+        }, 10);
+      } else {
+        intentedFrame.current = 0;
+        frameCount.current = 0;
+      }
+    };
+
+    window.requestAnimationFrame(function () {
+      const canvasWidth = canvasRef.current.width;
+      const canvasHeight = canvasRef.current.height;
+      const imageObj = slideImageObjects[currentIndex];
+      const imageWidth = imageObj.width || 1920;
+      const imageHeight = imageObj.height || 1080;
+      let ratio = imageObj.height / imageObj.width;
+      let width = canvasHeight / ratio;
+      ctx.current.clearRect(0, 0, canvasWidth, canvasHeight);
+      ctx.current.drawImage(
+        imageObj,
+        imageWidth / 2 - imageHeight / 2,
+        0,
+        imageWidth,
+        imageHeight,
+        0,
+        0,
+        width,
+        canvasHeight
+      );
+    });
+  }
 
   useEffect(() => {
     ctx.current = canvasRef.current.getContext("2d");
@@ -94,85 +133,19 @@ const FittingViewerSwipeable = () => {
     setCanvasSize();
     window.onresize = function (e) {
       setCanvasSize();
-      redraw();
+      drawCanvas();
     };
   }, []);
 
   useEffect(() => {
     if (slideImageObjects.length > 0) {
       slideImageObjects[0].onload = function () {
-        redraw();
+        drawCanvas();
       };
-      redraw();
+      drawCanvas();
       //startTurntableAnimation();
     }
   }, [slideImageObjects]);
-
-  const intentedFrame = useRef(0);
-  const currentFrame = useRef(0);
-  const frameCount = useRef(0);
-
-  const redraw = (left = false, right = false, i = 1) => {
-    const canvasWidth = canvasRef.current.width;
-    const canvasHeight = canvasRef.current.height;
-    let deceleration = 1 * i;
-    const animating = () => {
-      if (flag.current) {
-        deceleration += 1;
-        //  console.log(`deceleration : ${deceleration}`);
-      }
-      if (frameCount.current < intentedFrame.current) {
-        //console.log(frameCount.current);
-        setTimeout(() => {
-          window.requestAnimationFrame(function () {
-            redraw(left, right, deceleration);
-          });
-        }, 10);
-      } else {
-        intentedFrame.current = 0;
-        frameCount.current = 0;
-      }
-    };
-    if (slideImageObjects.length > 0) {
-      const imageObj = slideImageObjects[currentFrame.current];
-      const imageWidth = imageObj.width || 1920;
-      const imageHeight = imageObj.height || 1080;
-      let ratio = imageObj.height / imageObj.width;
-      let width = canvasHeight / ratio;
-      ctx.current.clearRect(0, 0, canvasWidth, canvasHeight);
-      ctx.current.drawImage(
-        imageObj,
-        imageWidth / 2 - imageHeight / 2,
-        0,
-        imageWidth,
-        imageHeight,
-        0,
-        0,
-        width,
-        canvasHeight
-      );
-
-      frameCount.current++;
-      if (left) {
-        currentFrame.current--;
-      }
-      if (right) {
-        currentFrame.current++;
-      }
-
-      lastConnectToStart();
-      animating();
-    }
-  };
-
-  const lastConnectToStart = () => {
-    if (currentFrame.current < startIndex.current) {
-      currentFrame.current = lastIndex.current;
-    } else if (currentFrame.current > lastIndex.current) {
-      currentFrame.current = startIndex.current;
-    }
-    return currentFrame.current;
-  };
 
   function setCanvasSize() {
     canvasRef.current.width = canvasRef.current.parentElement.clientWidth;
@@ -217,4 +190,4 @@ const Container = styled.div`
 
 const SlideImage = styled.img``;
 
-export default FittingViewerSwipeable;
+export default FittingViewerWithoutAnimation;
