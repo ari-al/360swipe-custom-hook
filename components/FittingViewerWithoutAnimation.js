@@ -48,6 +48,7 @@ const FittingViewerWithoutAnimation = () => {
     onSwiped: () => {
       setSwipingCursor(DEFAULT);
       setDelta(0);
+      clickEventDivision.current = CLICK;
       console.log("swiping end");
     },
     onSwiping: (eventData) => {

@@ -33,7 +33,7 @@ export default class MyDocument extends Document {
       <Html>
         <Head>
           <title>Louis Vuitton</title>
-          <meta charSet="utf-8"></meta>
+          <meta charSet="utf-8" content="width=device-width"></meta>
           <body>
             <Main />
             <NextScript />

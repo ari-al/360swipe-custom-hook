@@ -53,7 +53,10 @@ export default function ProductImageZoom({ zoomImageSrc, isOpen, onClose }) {
           <TransformComponent>
             <ZoomContainer
               onClick={handleZoomInAndOut}
-              onTouchStart={handleZoomInAndOut}
+              onTouchEnd={(event) => {
+                event.preventDefault();
+                handleZoomInAndOut();
+              }}
               cursor={zoomCursorSrc}
             >
               <picture>
