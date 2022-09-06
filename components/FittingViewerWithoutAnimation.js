@@ -48,7 +48,6 @@ const FittingViewerWithoutAnimation = () => {
     onSwiped: () => {
       setSwipingCursor(DEFAULT);
       setDelta(0);
-      clickEventDivision.current = CLICK;
       console.log("swiping end");
     },
     onSwiping: (eventData) => {
@@ -156,6 +155,10 @@ const FittingViewerWithoutAnimation = () => {
         {...handlers}
         cursor={swipingCursor}
         onClick={handleClick}
+        onTouchEnd={(event) => {
+          event.preventDefault();
+          handleClick();
+        }}
       ></Slider>
       <Container className="fitting">
         {!allImageLoaded && <h1>LOADING</h1>}
