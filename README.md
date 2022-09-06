@@ -11,6 +11,7 @@ yarn dev
 ```
 
 Open http://localhost:3000 with your favorite browser to see your project.
+```
 .
 ├── README.md # README file
 ├── public # Public assets folder
@@ -25,6 +26,7 @@ Open http://localhost:3000 with your favorite browser to see your project.
 │ ├── style.css # set font-face
 ├── next.config.js # next config
 └── .eslintrc.json # ESlint setup
+```
 
 ## LV-Demo
 
