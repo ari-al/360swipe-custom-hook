@@ -31,8 +31,9 @@ const ProductDetail = () => {
               <li>Regular fit</li>
               <li>Model wears size 36</li>
               <li>
-                Model measurements : Bust 30'' / 76 cm, Height 5' 10" / 176 cm,
-                Waist 23,2" / 59 cm, Hips 34'' / 86 cm
+                Model measurements : Bust 30&apos; / 76 cm, Height 5&apos;
+                10&apos; / 176 cm, Waist 23,2&apos; / 59 cm, Hips 34&apos; / 86
+                cm
               </li>
               <li>Made in Italy</li>
             </ul>
