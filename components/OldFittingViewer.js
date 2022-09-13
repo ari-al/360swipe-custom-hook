@@ -11,9 +11,7 @@ function getFittingImageArray() {
   let fittingImageArray = [];
   let i = 0;
   for (; i < 120; i++) {
-    const path = `https://d1j0ofdyze21yi.cloudfront.net/style-final/AVATAR-female-Muscle_Hair-Bob_Cool_Face-B_CLOTH-female-Muscle-W_NK_DF_RUN_DVN_TEMPO_LX_SHORT_CLOTH-female-Muscle-W_NK_DFADV_RUN_DVN_ENG_TANK_SHOES-female-W_PEGASUS_TURBO_NEXT_NATURE/${i
-      .toString()
-      .padStart(4, "0")}.jpg`;
+    const path = `../fitting/SEQ.${i.toString().padStart(4, "0")}.png`;
     fittingImageArray.push(path);
   }
   return fittingImageArray;
