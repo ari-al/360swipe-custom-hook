@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import ProductInfo from "./ProductInfo";
-import FittingViewerWithoutAnimation from "./FittingViewerWithoutAnimation";
+import FittingViewer from "./FittingViewer";
 
 const Product = (props) => {
   return (
     <section>
       <Container className="product">
         <Container className="product-left">
-          <FittingViewerWithoutAnimation />
+          <FittingViewer />
         </Container>
         <Container className="product-right">
           <ProductInfo />

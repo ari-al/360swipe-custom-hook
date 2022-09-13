@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import styled from "styled-components";
+import { useSwipeable } from "react-swipeable";
+import ProductImageZoom from "./ProductImageZoom";
 
 function getFittingImageArray() {
   let fittingImageArray = [];
@@ -14,79 +16,161 @@ function getFittingImageArray() {
 }
 
 const FittingViewer = () => {
-  const [slideImages, setSlideImages] = useState([]);
-  const sliderRef = useRef();
-  const [positionX, setPositionX] = useState();
-  const [currentPositionX, setCurrentPositionX] = useState();
+  const DEFAULT = "default";
+  const GRAP = "grap";
+  const SWIPE = "swipe";
+  const CLICK = "click";
+  const [slideImageObjects, setSlideImageObjects] = useState([]);
+  const [allImageLoaded, setAllImageLoaded] = useState(false);
+  const [swipingCursor, setSwipingCursor] = useState(DEFAULT);
+  const [zoomImageSrc, setZoomImageSrc] = useState("");
+  const prevDiff = useRef(0);
+  const clickEventDivision = useRef(CLICK);
+
+  const ctx = useRef();
+  const canvasRef = useRef();
+
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [updateCurrentIndex, setUpdateCurrentIndex] = useState(0);
-  const duration = useRef();
-  const startTime = useRef();
+  const [delta, setDelta] = useState(0);
+
+  const configswipeable = {
+    preventDefaultTouchmoveEvent: false, // call e.preventDefault *See Details*
+    trackTouch: true, // track touch input
+    trackMouse: true, // track mouse input
+    rotationAngle: 0, // set a rotation angle
+    delta: 5,
+  };
+
+  const handlers = useSwipeable({
+    onSwipeStart: () => {
+      setSwipingCursor(GRAP);
+      clickEventDivision.current = SWIPE;
+      console.log("swiping start");
+    },
+    onSwiped: () => {
+      setSwipingCursor(DEFAULT);
+      setDelta(0);
+      console.log("swiping end");
+    },
+    onSwiping: (eventData) => {
+      let diff = delta - eventData.deltaX;
+      let start = 0;
+      let end = slideImageObjects.length - 1;
+      const minVelocity =
+        eventData.velocity * 10 < 1
+          ? eventData.velocity * 10
+          : eventData.velocity;
+      let index = Math.round(currentIndex - diff * minVelocity);
+      if (index < start) {
+        index = end;
+      } else if (index > end) {
+        index = start;
+      }
+      setCurrentIndex(index);
+      setDelta(eventData.deltaX);
+      drawCanvas();
+      prevDiff.current = diff;
+    },
+    ...configswipeable,
+  });
+
+  const drawCanvas = () => {
+    //  console.log(`currentIndex: ${currentIndex}`);
+    const canvasWidth = canvasRef.current.width;
+    const canvasHeight = canvasRef.current.height;
+    const imageObj = slideImageObjects[currentIndex];
+    const imageWidth = imageObj.width || 1920;
+    const imageHeight = imageObj.height || 1080;
+    let ratio = imageObj.height / imageObj.width;
+    let width = canvasHeight / ratio;
+    ctx.current.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.current.drawImage(
+      imageObj,
+      imageWidth / 2 - imageHeight / 2,
+      0,
+      imageWidth,
+      imageHeight,
+      0,
+      0,
+      width,
+      canvasHeight
+    );
+  };
 
   useEffect(() => {
+    ctx.current = canvasRef.current.getContext("2d");
+
     const imageArray = getFittingImageArray();
-    setSlideImages([...imageArray]);
-  }, []);
-
-  const handleMousedown = useCallback((event) => {
-    setPositionX(event.clientX);
-    setCurrentPositionX(event.clientX);
-    startTime.current = new Date();
-  }, []);
-
-  const handleMousemove = (event, deltaX = 10) => {
-    if (currentPositionX > 0) {
-      const mouseClientX = event.clientX;
-      const diff = mouseClientX - currentPositionX;
-      const startIndex = 0;
-      const lastIndex = slideImages.length - 1;
-      if (diff > 0) {
-        //right
-      } else if (diff < 0) {
-        //left
-      }
-      if (Math.abs(diff) > deltaX) {
-        // let nextIndex = currentIndex + (diff > 0 ? 1 : -1);
-        let nextIndex = currentIndex + Math.ceil(diff / (5 / 2));
-        if (nextIndex < startIndex) {
-          nextIndex = lastIndex;
-        } else if (nextIndex > lastIndex) {
-          nextIndex = startIndex;
+    const imageObjects = [];
+    let loadedImageCounter = 0;
+    imageArray.forEach((item, index) => {
+      const image = new Image();
+      image.src = item;
+      imageObjects.push(image);
+      imageObjects[index].onload = function () {
+        if (loadedImageCounter === imageArray.length - 1) {
+          setAllImageLoaded(true);
         }
-        setCurrentIndex(nextIndex);
-        setCurrentPositionX(mouseClientX);
-      }
-    }
-  };
-
-  const handleMouseup = useCallback(() => {
-    removeSlideEvent();
-  }, [positionX, startTime, slideImages, currentIndex]);
-
-  const handleFocusout = useCallback(() => {
-    removeSlideEvent();
+        loadedImageCounter++;
+      };
+    });
+    setSlideImageObjects([...imageObjects]);
+    setCanvasSize();
+    setZoomImageSrc(imageArray[0]);
   }, []);
-
-  const removeSlideEvent = () => {
-    setCurrentPositionX(-1);
-  };
 
   useEffect(() => {
-    console.log(currentIndex);
-    setCurrentIndex(updateCurrentIndex);
-  }, [updateCurrentIndex]);
+    window.onresize = function (e) {
+      setCanvasSize();
+      drawCanvas();
+    };
+    if (slideImageObjects.length > 0) {
+      slideImageObjects[0].onload = function () {
+        drawCanvas();
+      };
+      drawCanvas();
+    }
+    setZoomImageSrc(slideImageObjects[currentIndex]?.getAttribute("src"));
+  }, [slideImageObjects, currentIndex]);
+
+  function setCanvasSize() {
+    canvasRef.current.width = canvasRef.current.parentElement.clientWidth;
+    canvasRef.current.height = canvasRef.current.parentElement.clientHeight;
+  }
+
+  const [isOpenZoomCompo, setIsOpenZoomCompo] = useState(false);
+  const handleClick = () => {
+    if (clickEventDivision.current === CLICK) {
+      setIsOpenZoomCompo(true);
+    }
+    clickEventDivision.current = CLICK;
+  };
+  const handleClickZoomCloseButton = () => {
+    setIsOpenZoomCompo(false);
+  };
+
   return (
     <>
       <Slider
-        ref={sliderRef}
-        onMouseDown={handleMousedown}
-        onMouseMove={handleMousemove}
-        onMouseUp={handleMouseup}
-        onBlur={handleFocusout}
-      />
+        {...handlers}
+        cursor={swipingCursor}
+        onClick={handleClick}
+        onTouchEnd={(event) => {
+          event.preventDefault();
+          handleClick();
+        }}
+      ></Slider>
       <Container className="fitting">
-        <SlideImage src={slideImages[currentIndex]} />
+        {!allImageLoaded && <h1>LOADING</h1>}
+        <canvas ref={canvasRef} height={100} width={100} />
       </Container>
+      {isOpenZoomCompo && (
+        <ProductImageZoom
+          zoomImageSrc={zoomImageSrc}
+          isOpen={isOpenZoomCompo}
+          onClose={handleClickZoomCloseButton}
+        />
+      )}
     </>
   );
 };
@@ -98,6 +182,8 @@ const Slider = styled.div`
   top: 0;
   left: 0;
   z-index: 10;
+  touch-action: none;
+  cursor: ${(props) => props.cursor};
 `;
 
 const Container = styled.div`
@@ -114,7 +200,5 @@ const Container = styled.div`
     }
   }
 `;
-
-const SlideImage = styled.img``;
 
 export default FittingViewer;
