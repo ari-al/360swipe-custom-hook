@@ -27,7 +27,7 @@ const FittingViewer = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentDirection, setCurrentDricetion] = useState(0);
   const [swipingCursor, setSwipingCursor] = useState(DEFAULT);
-  const [zoomImageSrc, setZoomImageSrc] = useState("");
+  const [zoomImageSrc, setZoomImageSrc] = useState("none");
   const clickEventDivision = useRef(CLICK);
   let startTime = new Date();
   let endTime = new Date();
@@ -35,8 +35,6 @@ const FittingViewer = () => {
   useEffect(() => {
     const imageArray = getFittingImageArray();
     setSlideImages([...imageArray]);
-
-    setZoomImageSrc(imageArray[0]);
   }, []);
 
   const handleMousedown = useCallback((event) => {
@@ -101,6 +99,7 @@ const FittingViewer = () => {
   const handleClick = () => {
     if (clickEventDivision.current === CLICK) {
       setIsOpenZoomCompo(true);
+      console.log(zoomImageSrc);
     }
     clickEventDivision.current = CLICK;
   };
@@ -111,7 +110,7 @@ const FittingViewer = () => {
 
   useEffect(() => {
     setZoomImageSrc(slideImages[currentIndex]);
-  }, [currentIndex]);
+  }, [slideImages, currentIndex]);
 
   return (
     <>

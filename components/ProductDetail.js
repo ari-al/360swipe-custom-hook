@@ -16,10 +16,10 @@ const ProductDetail = () => {
         </Container>
         <Container className="otherview">
           <div>
-            <img srcset="https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-gold-tweed-peplum-top-ready-to-wear--FNTO78RH3450_PM2_Front%20view.png?wid=2048&hei=2048" />
+            <img src="https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-gold-tweed-peplum-top-ready-to-wear--FNTO78RH3450_PM2_Front%20view.png?wid=2048&hei=2048" />
           </div>
           <div>
-            <img srcset="https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-gold-tweed-peplum-top-ready-to-wear--FNTO78RH3450_PM1_Cropped%20view.jpg?wid=2048" />
+            <img src="https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-gold-tweed-peplum-top-ready-to-wear--FNTO78RH3450_PM1_Cropped%20view.jpg?wid=2048" />
           </div>
         </Container>
         <Container className="detail-description">
@@ -40,10 +40,10 @@ const ProductDetail = () => {
         </Container>
         <Container className="immersion">
           <div>
-            <img srcset="https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-gold-tweed-peplum-top-ready-to-wear--FNTO78RH3450_PM1_Cropped%20worn%20view.png?wid=1240&hei=1240" />
+            <img src="https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-gold-tweed-peplum-top-ready-to-wear--FNTO78RH3450_PM1_Cropped%20worn%20view.png?wid=1240&hei=1240" />
           </div>
           <div>
-            <img srcset="https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-gold-tweed-peplum-top-ready-to-wear--FNTO78RH3450_PM1_Ambiance%20view.png?wid=1240&hei=1240" />
+            <img src="https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-gold-tweed-peplum-top-ready-to-wear--FNTO78RH3450_PM1_Ambiance%20view.png?wid=1240&hei=1240" />
           </div>
         </Container>
       </Container>
