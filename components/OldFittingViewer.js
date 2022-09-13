@@ -98,7 +98,6 @@ const FittingViewer = () => {
 
   const [isOpenZoomCompo, setIsOpenZoomCompo] = useState(false);
   const handleClick = () => {
-    console.log("click");
     if (clickEventDivision.current === CLICK) {
       setIsOpenZoomCompo(true);
     }
@@ -118,6 +117,7 @@ const FittingViewer = () => {
       <Slider
         ref={sliderRef}
         cursor={swipingCursor}
+        onClick={handleClick}
         onMouseDown={handleMousedown}
         onMouseMove={handleMousemove}
         onMouseUp={handleMouseup}
@@ -127,8 +127,8 @@ const FittingViewer = () => {
         onTouchEnd={(event) => {
           event.preventDefault();
           handleMouseup();
+          handleClick();
         }}
-        onClick={handleClick}
       />
       <Container className="fitting">
         <SlideImage src={slideImages[currentIndex]} />
