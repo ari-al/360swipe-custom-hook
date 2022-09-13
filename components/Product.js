@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import ProductInfo from "./ProductInfo";
-import FittingViewer from "./FittingViewer";
+import FittingViewer from "./OldFittingViewer";
 
 const Product = (props) => {
   return (
