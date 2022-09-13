@@ -4,20 +4,15 @@ import "../asset/style.css";
 
 const GlobalStyles = createGlobalStyle` 
   ${reset}
-  html,
-  body,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  input,
-  select,
-  button {
+
+  body{
+    font-size: 16px;
+    letter-spacing: .025rem;
+    line-height: 1.5rem;
+    font-weight: 300;
     font-family: "Louis Vuitton Web", "Helvetica Neue", "Helvetica", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     margin: 0;
-    word-break: keep-all;
   }
 
   a{

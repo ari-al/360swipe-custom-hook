@@ -80,6 +80,13 @@ const Container = styled.div`
       padding-left: 3.125vw;
       padding-right: 3.125vw;
     }
+    &.detail {
+      text-align: center;
+      border-top: 1px solid #eae8e4;
+      border-bottom: 1px solid #eae8e4;
+      margin-top: -1px;
+      padding: 1rem 1.5rem;
+    }
   }
 `;
 ProductInfo.propTypes = {};

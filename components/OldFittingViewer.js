@@ -2,6 +2,11 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import styled from "styled-components";
 import ProductImageZoom from "./ProductImageZoom";
 
+const DEFAULT = "default";
+const GRAP = "grap";
+const SWIPE = "swipe";
+const CLICK = "click";
+
 function getFittingImageArray() {
   let fittingImageArray = [];
   let i = 0;
@@ -15,10 +20,6 @@ function getFittingImageArray() {
 }
 
 const FittingViewer = () => {
-  const DEFAULT = "default";
-  const GRAP = "grap";
-  const SWIPE = "swipe";
-  const CLICK = "click";
   const [slideImages, setSlideImages] = useState([]);
   const sliderRef = useRef();
   const [positionX, setPositionX] = useState();
@@ -39,7 +40,7 @@ const FittingViewer = () => {
   }, []);
 
   const handleMousedown = useCallback((event) => {
-    const clientX = event?.clientX || event.touches[0].clientX;
+    const clientX = event?.clientX || event.touches[0]?.clientX;
     setPositionX(clientX);
     setCurrentPositionX(clientX);
     startTime = new Date(); // 시작
@@ -50,7 +51,7 @@ const FittingViewer = () => {
     if (currentPositionX > 0) {
       endTime = new Date();
       const time = endTime - startTime;
-      const mouseClientX = event?.clientX || event.touches[0].clientX;
+      const mouseClientX = event?.clientX || event.touches[0]?.clientX;
 
       const diff = mouseClientX - currentPositionX;
       const startIndex = 0;
@@ -153,6 +154,10 @@ const Slider = styled.div`
   touch-action: none;
   z-index: 10;
   cursor: ${(props) => props.cursor};
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 `;
 
 const Container = styled.div`

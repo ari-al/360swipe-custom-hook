@@ -5,6 +5,7 @@ import styles from "./layout.module.scss";
 import LVLogo from "../asset/images/lv-logo.svg";
 import MobileLVLogo from "../asset/images/mobile-lv-logo.svg";
 import classnames from "classnames";
+import FooterLogo from "../asset/images/footer-lv-logo.svg";
 
 const Layout = ({ children }) => {
   return (
@@ -32,6 +33,11 @@ const Layout = ({ children }) => {
         </div>
       </header>
       <main>{children}</main>
+      <footer className={styles.footer}>
+        <div>
+          <FooterLogo />
+        </div>
+      </footer>
     </div>
   );
 };
