@@ -14,7 +14,7 @@ function getFittingImageArray() {
   let fittingImageArray = [];
   let i = 1;
   for (; i <= 120; i++) {
-    const path = `../fitting/SEQ 2.${i.toString().padStart(3, "0")}.png`;
+    const path = `../fitting/fullbody.${i.toString().padStart(3, "0")}.png`;
     fittingImageArray.push(path);
   }
   return fittingImageArray;
