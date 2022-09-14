@@ -59,9 +59,9 @@ export default function ProductImageZoom({ zoomImageSrc, isOpen, onClose }) {
               }}
               cursor={zoomCursorSrc}
             >
-              <picture>
+              <div>
                 <ZoomImage src={zoomImageSrc}></ZoomImage>
-              </picture>
+              </div>
             </ZoomContainer>
           </TransformComponent>
         </>
@@ -110,6 +110,10 @@ const Container = styled.div`
 `;
 const ZoomContainer = styled.div`
   text-align: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   picture {
     text-align: center;
   }
