@@ -9,8 +9,7 @@ const CLICK = "click";
 
 function getFittingImageArray() {
   let fittingImageArray = [];
-  let i = 0;
-  for (; i < 120; i++) {
+  for (let i = 0; i < 120; i++) {
     const path = `/fitting/SEQ.${i.toString().padStart(4, "0")}.png`;
     fittingImageArray.push(path);
   }
@@ -48,6 +47,7 @@ const FittingViewer = () => {
       imageObjects.push(image);
       imageObjects[index].onload = function () {
         console.log(loadedImageCounter);
+        console.log(imageObjects[index].src);
         if (loadedImageCounter === imageArray.length - 1) {
           setAllImageLoaded(true);
         }
@@ -135,7 +135,6 @@ const FittingViewer = () => {
   }, [slideImages, currentIndex]);
 
   const drawCanvas = () => {
-    //  console.log(`currentIndex: ${currentIndex}`);
     const canvasWidth = canvasRef.current.width;
     const canvasHeight = canvasRef.current.height;
     const imageObj = slideImageObjects[currentIndex];
