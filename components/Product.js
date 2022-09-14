@@ -28,6 +28,7 @@ const Container = styled.div`
   &.product-left {
     position: relative;
     flex: 1 0 0;
+    overflow: hidden;
   }
   &.product-left:before {
     display: block;

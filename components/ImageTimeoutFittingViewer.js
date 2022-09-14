@@ -19,7 +19,11 @@ function getFittingImageArray() {
   }
   return fittingImageArray;
 }
-
+const background = {
+  0: "../background/bg1.png",
+  1: "../background/bg2.png",
+  2: "../background/bg3.png",
+};
 const FittingViewer = () => {
   const [slideImages, setSlideImages] = useState([]);
   const [positionX, setPositionX] = useState();
@@ -28,6 +32,7 @@ const FittingViewer = () => {
   const [currentDirection, setCurrentDricetion] = useState(0);
   const [swipingCursor, setSwipingCursor] = useState(DEFAULT);
   const [zoomImageSrc, setZoomImageSrc] = useState("none");
+  const [selectedBackground, setSelectedBackground] = useState(0);
   const clickEventDivision = useRef(CLICK);
   const sliderRef = useRef();
   let startTime = new Date();
@@ -130,6 +135,10 @@ const FittingViewer = () => {
       setSlideZoomRatio(slideZoomRatio - 0.25);
     }
   };
+  const handleSelectBackground = (event) => {
+    setSelectedBackground(Number(event.target.dataset.index));
+    console.log(selectedBackground);
+  };
   useEffect(() => {
     setZoomImageSrc(slideImages[currentIndex]);
   }, [slideImages, currentIndex]);
@@ -180,7 +189,11 @@ const FittingViewer = () => {
 
   return (
     <>
-      <Container className="background"></Container>
+      <Container
+        className="background"
+        selectedBackground={selectedBackground}
+        zoomRatio={slideZoomRatio}
+      ></Container>
       <Container className="zoom-button">
         <button onClick={handleSlideImageZoomIn}>
           <Image src={zoomIn} />
@@ -188,6 +201,35 @@ const FittingViewer = () => {
         <button onClick={handeSlideImageZoomOut}>
           <Image src={zoomOut} />
         </button>
+      </Container>
+      <Container className="background-button">
+        <button
+          style={{
+            background: "url(../background/bg1_thumbnail.png)",
+            backgroundSize: "cover",
+          }}
+          onClick={handleSelectBackground}
+          data-index={0}
+          className={selectedBackground === 0 ? "active" : ""}
+        ></button>
+        <button
+          style={{
+            background: "url(../background/bg2_thumbnail.png)",
+            backgroundSize: "cover",
+          }}
+          onClick={handleSelectBackground}
+          data-index={1}
+          className={selectedBackground === 1 ? "active" : ""}
+        ></button>
+        <button
+          style={{
+            background: "url(../background/bg3_thumbnail.png)",
+            backgroundSize: "cover",
+          }}
+          onClick={handleSelectBackground}
+          data-index={2}
+          className={selectedBackground === 2 ? "active" : ""}
+        ></button>
       </Container>
       <Slider
         ref={sliderRef}
@@ -267,16 +309,17 @@ const Container = styled.div`
     top: 0;
     left: 0;
     width: 100%;
-    background: url("../background/default.png");
+    background: url(${(props) => background[props.selectedBackground]});
+    transform: scale(${(props) => props.zoomRatio});
+    background-size: cover;
     height: 100%;
   }
   &.zoom-button {
     display: flex;
     flex-flow: column;
     position: absolute;
-    top: 50%;
+    bottom: 4%;
     left: 4%;
-    transform: translate(0, -50%);
     z-index: 15;
     button {
       height: 48px;
@@ -292,6 +335,25 @@ const Container = styled.div`
         z-index: 15;
         background-color: #f1eee98a;
         border-radius: 10px;
+      }
+    }
+  }
+  &.background-button {
+    position: absolute;
+    z-index: 15;
+    bottom: 4%;
+    right: 4%;
+    display: flex;
+    flex-flow: column;
+    row-gap: 4px;
+    button {
+      width: 40px;
+      height: 40px;
+      opacity: 0.5;
+      border: 1px solid rgba(192, 192, 192, 0.5);
+      border-radius: 9999px;
+      &.active {
+        opacity: 1;
       }
     }
   }
