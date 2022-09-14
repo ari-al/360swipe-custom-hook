@@ -88,10 +88,6 @@ const Container = styled.div`
     width: 72px;
     height: 72px;
     z-index: 20;
-    @media screen and (max-width: 64rem) {
-      width: 56px;
-      height: 56px;
-    }
   }
   .close-button:hover {
     &:before {
@@ -103,6 +99,12 @@ const Container = styled.div`
       z-index: 20;
       background-color: #f1eee98a;
       box-shadow: -1px 1px #eae8e4;
+    }
+  }
+  @media screen and (max-width: 64rem) {
+    .close-button {
+      width: 56px;
+      height: 56px;
     }
   }
 `;
@@ -117,4 +119,11 @@ const ZoomContainer = styled.div`
 `;
 const ZoomImage = styled.img`
   width: 50%;
+  @media screen and (max-width: 64rem) {
+    height: 100vh;
+    width: auto;
+    position: relative;
+    left: -50%;
+    transform: translate(25%);
+  }
 `;
