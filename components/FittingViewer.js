@@ -3,7 +3,7 @@ import styled from "styled-components";
 import ProductImageZoom from "./ProductImageZoom";
 
 const DEFAULT = "default";
-const GRAP = "grap";
+const GRAB = "grab";
 const SWIPE = "swipe";
 const CLICK = "click";
 
@@ -19,7 +19,6 @@ function getFittingImageArray() {
 
 const FittingViewer = () => {
   const [slideImages, setSlideImages] = useState([]);
-  const sliderRef = useRef();
   const [positionX, setPositionX] = useState();
   const [currentPositionX, setCurrentPositionX] = useState();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,6 +26,7 @@ const FittingViewer = () => {
   const [swipingCursor, setSwipingCursor] = useState(DEFAULT);
   const [zoomImageSrc, setZoomImageSrc] = useState("none");
   const clickEventDivision = useRef(CLICK);
+  const sliderRef = useRef();
   let startTime = new Date();
   let endTime = new Date();
 
@@ -40,7 +40,7 @@ const FittingViewer = () => {
     setPositionX(clientX);
     setCurrentPositionX(clientX);
     startTime = new Date(); // 시작
-    setSwipingCursor(GRAP);
+    setSwipingCursor(GRAB);
   }, []);
 
   const handleMousemove = (event, deltaX = 10) => {
@@ -52,8 +52,7 @@ const FittingViewer = () => {
       const diff = mouseClientX - currentPositionX;
       const startIndex = 0;
       const lastIndex = slideImages.length - 1;
-      let velocity = Math.sqrt(Math.abs(mouseClientX - positionX)) / time; //√(absX^2 + absY^2) / time
-      // velocity = velocity < 1 ? velocity * 10 : velocity;
+      let velocity = Math.sqrt(Math.abs(mouseClientX - positionX)) / time; //√(absX^2) / time
 
       if (Math.abs(diff) > deltaX) {
         clickEventDivision.current = SWIPE;
@@ -97,7 +96,6 @@ const FittingViewer = () => {
   const handleClick = () => {
     if (clickEventDivision.current === CLICK) {
       setIsOpenZoomCompo(true);
-      console.log(zoomImageSrc);
     }
     clickEventDivision.current = CLICK;
   };
@@ -129,7 +127,20 @@ const FittingViewer = () => {
         }}
       />
       <Container className="fitting">
-        <SlideImage src={slideImages[currentIndex]} />
+        {slideImages.map((slideImage, index) => {
+          return (
+            <>
+              <SlideImage
+                src={slideImage}
+                style={
+                  currentIndex === index
+                    ? { display: "block" }
+                    : { display: "none" }
+                }
+              />
+            </>
+          );
+        })}
       </Container>
       {isOpenZoomCompo && (
         <ProductImageZoom
