@@ -47,6 +47,7 @@ const FittingViewer = () => {
       image.src = item;
       imageObjects.push(image);
       imageObjects[index].onload = function () {
+        console.log(loadedImageCounter);
         if (loadedImageCounter === imageArray.length - 1) {
           setAllImageLoaded(true);
         }
@@ -143,6 +144,8 @@ const FittingViewer = () => {
     let ratio = imageObj.height / imageObj.width;
     let width = canvasHeight / ratio;
     ctx.current.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.current.fillStyle = "green";
+    ctx.current.fillRect(0, 0, canvasWidth, canvasHeight);
     ctx.current.drawImage(
       imageObj,
       imageWidth / 2 - imageHeight / 2,
