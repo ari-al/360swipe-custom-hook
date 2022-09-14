@@ -56,16 +56,17 @@ const FittingViewer = () => {
       endTime = new Date();
       let time = endTime - startTime;
       time = time < 1 ? 1 : time;
+      console.log(`time:${time}`);
       const mouseClientX = event?.clientX || event.touches[0]?.clientX;
 
       const diff = mouseClientX - currentPositionX;
       let velocity = Math.sqrt(Math.abs(mouseClientX - positionX)) / time; //√(absX^2) / time
+      velocity = isFinite(velocity) ? velocity : 1;
       const setFrameStatus = () => {
         intentedFrame.current += Math.abs(
           Math.ceil(diff / (deltaX / (2 * velocity)))
         );
         console.log(`sqrt:${Math.sqrt(Math.abs(mouseClientX - positionX))}`);
-        console.log(`time:${time}`);
         console.log(deltaX / (2 * velocity));
         console.log(`velocity:${velocity}`);
         console.log(intentedFrame);
