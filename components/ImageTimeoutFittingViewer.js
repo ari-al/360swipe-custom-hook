@@ -20,9 +20,10 @@ function getFittingImageArray() {
   return fittingImageArray;
 }
 const background = {
-  0: "../background/bg1.png",
-  1: "../background/bg2.png",
-  2: "../background/bg3.png",
+  none:"none",
+  basic: "../background/bg1.png",
+  sky: "../background/bg2.png",
+  flower: "../background/bg3.png",
 };
 const FittingViewer = () => {
   const [slideImages, setSlideImages] = useState([]);
@@ -32,7 +33,7 @@ const FittingViewer = () => {
   const [currentDirection, setCurrentDricetion] = useState(0);
   const [swipingCursor, setSwipingCursor] = useState(DEFAULT);
   const [zoomImageSrc, setZoomImageSrc] = useState("none");
-  const [selectedBackground, setSelectedBackground] = useState(0);
+  const [selectedBackground, setSelectedBackground] = useState("basic");
   const clickEventDivision = useRef(CLICK);
   const sliderRef = useRef();
   let startTime = new Date();
@@ -145,7 +146,7 @@ const FittingViewer = () => {
     }
   };
   const handleSelectBackground = (event) => {
-    setSelectedBackground(Number(event.target.dataset.index));
+    setSelectedBackground(event.target.dataset.name);
     console.log(selectedBackground);
   };
   useEffect(() => {
@@ -218,8 +219,8 @@ const FittingViewer = () => {
             backgroundSize: "cover",
           }}
           onClick={handleSelectBackground}
-          data-index={0}
-          className={selectedBackground === 0 ? "active" : ""}
+          data-name={"basic"}
+          className={selectedBackground === "basic" ? "active" : ""}
         ></button>
         <button
           style={{
@@ -227,8 +228,8 @@ const FittingViewer = () => {
             backgroundSize: "cover",
           }}
           onClick={handleSelectBackground}
-          data-index={1}
-          className={selectedBackground === 1 ? "active" : ""}
+          data-name={"sky"}
+          className={selectedBackground === "sky" ? "active" : ""}
         ></button>
         <button
           style={{
@@ -236,8 +237,15 @@ const FittingViewer = () => {
             backgroundSize: "cover",
           }}
           onClick={handleSelectBackground}
-          data-index={2}
-          className={selectedBackground === 2 ? "active" : ""}
+          data-name={"flower"}
+          className={selectedBackground === "flower" ? "active" : ""}
+        ></button>
+         <button
+          style={{background:'white'
+          }}
+          onClick={handleSelectBackground}
+          data-name={"none"}
+          className={selectedBackground === "none" ? "active" : ""}
         ></button>
       </Container>
       <Slider
