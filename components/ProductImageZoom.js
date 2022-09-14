@@ -87,6 +87,7 @@ const Container = styled.div`
     right: 0;
     width: 72px;
     height: 72px;
+    z-index: 20;
     @media screen and (max-width: 64rem) {
       width: 56px;
       height: 56px;
@@ -99,10 +100,9 @@ const Container = styled.div`
       width: 72px;
       display: inline-block;
       position: absolute;
-      z-index: 10;
+      z-index: 20;
       background-color: #f1eee98a;
       box-shadow: -1px 1px #eae8e4;
-      z-index: 10;
     }
   }
 `;
@@ -116,5 +116,5 @@ const ZoomContainer = styled.div`
   }
 `;
 const ZoomImage = styled.img`
-  width: 75%;
+  width: 50%;
 `;

@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import styled from "styled-components";
+import Image from "next/image";
 import ProductImageZoom from "./ProductImageZoom";
+import zoomIn from "../asset/images/zoom-in.png";
+import zoomOut from "../asset/images/zoom-out.png";
 
 const DEFAULT = "default";
 const GRAB = "grab";
@@ -104,6 +107,17 @@ const FittingViewer = () => {
     setIsOpenZoomCompo(false);
   };
 
+  const [slideZoomRatio, setSlideZoomRatio] = useState(1);
+  const handleSlideImageZoomIn = () => {
+    if (slideZoomRatio < 1.75) {
+      setSlideZoomRatio(slideZoomRatio + 0.25);
+    }
+  };
+  const handeSlideImageZoomOut = () => {
+    if (slideZoomRatio > 1) {
+      setSlideZoomRatio(slideZoomRatio - 0.25);
+    }
+  };
   useEffect(() => {
     setZoomImageSrc(slideImages[currentIndex]);
   }, [slideImages, currentIndex]);
@@ -111,6 +125,14 @@ const FittingViewer = () => {
   return (
     <>
       <Container className="background"></Container>
+      <Container className="zoom-button">
+        <button onClick={handleSlideImageZoomIn}>
+          <Image src={zoomIn} width={48} height={48} />
+        </button>
+        <button onClick={handeSlideImageZoomOut}>
+          <Image src={zoomOut} width={48} height={48} />
+        </button>
+      </Container>
       <Slider
         ref={sliderRef}
         cursor={swipingCursor}
@@ -127,7 +149,7 @@ const FittingViewer = () => {
           handleClick();
         }}
       />
-      <Container className="fitting">
+      <Container className="fitting" zoomRatio={slideZoomRatio}>
         {slideImages.map((slideImage, index) => {
           return (
             <>
@@ -176,10 +198,12 @@ const Container = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transform: scale(${(props) => props.zoomRatio});
     }
   }
   &.background {
@@ -189,6 +213,30 @@ const Container = styled.div`
     width: 100%;
     background: url("../background/default.png");
     height: 100%;
+  }
+  &.zoom-button {
+    display: flex;
+    flex-flow: column;
+    position: absolute;
+    top: 50%;
+    left: 4%;
+    transform: translate(0, -50%);
+    z-index: 15;
+    button {
+      height: 48px;
+    }
+    button:hover {
+      &:before {
+        content: "";
+        height: 48px;
+        width: 48px;
+        display: inline-block;
+        position: absolute;
+        z-index: 15;
+        background-color: #f1eee98a;
+        border-radius: 10px;
+      }
+    }
   }
 `;
 
