@@ -63,7 +63,8 @@ const FittingViewer = () => {
         intentedFrame.current += Math.abs(
           Math.ceil(diff / (deltaX / (2 * velocity)))
         );
-        console.log(Math.ceil(diff / (deltaX / (2 * velocity))));
+        console.log(deltaX / (2 * velocity));
+        console.log(velocity);
         console.log(intentedFrame);
         lastConnectToStart();
       };
