@@ -58,6 +58,7 @@ const FittingViewer = () => {
         intentedFrame.current += Math.abs(
           Math.ceil(diff / (deltaX / (2 * velocity)))
         );
+        console.log(intentedFrame);
         lastConnectToStart();
       };
 
@@ -137,7 +138,7 @@ const FittingViewer = () => {
   const frameCount = useRef(0);
 
   const redraw = (left = false, right = false, i = 1) => {
-    console.time("draw time");
+    //  console.time("draw time");
     const animating = () => {
       if (frameCount.current < intentedFrame.current) {
         window.requestAnimationFrame(function () {
@@ -158,7 +159,7 @@ const FittingViewer = () => {
       if (right) {
         currentFrame.current++;
       }
-      console.timeEnd("draw time");
+      //  console.timeEnd("draw time");
 
       lastConnectToStart();
       animating();
