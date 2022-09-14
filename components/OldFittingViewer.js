@@ -11,7 +11,7 @@ function getFittingImageArray() {
   let fittingImageArray = [];
   let i = 0;
   for (; i < 120; i++) {
-    const path = `../fitting/SEQ.${i.toString().padStart(4, "0")}.png`;
+    const path = `/fitting/SEQ.${i.toString().padStart(4, "0")}.png`;
     fittingImageArray.push(path);
   }
   return fittingImageArray;
@@ -29,11 +29,6 @@ const FittingViewer = () => {
   const clickEventDivision = useRef(CLICK);
   let startTime = new Date();
   let endTime = new Date();
-
-  useEffect(() => {
-    const imageArray = getFittingImageArray();
-    setSlideImages([...imageArray]);
-  }, []);
 
   const handleMousedown = useCallback((event) => {
     const clientX = event?.clientX || event.touches[0]?.clientX;
@@ -110,6 +105,76 @@ const FittingViewer = () => {
     setZoomImageSrc(slideImages[currentIndex]);
   }, [slideImages, currentIndex]);
 
+  const drawCanvas = () => {
+    //  console.log(`currentIndex: ${currentIndex}`);
+    const canvasWidth = canvasRef.current.width;
+    const canvasHeight = canvasRef.current.height;
+    const imageObj = slideImageObjects[currentIndex];
+    const imageWidth = imageObj.width || 1920;
+    const imageHeight = imageObj.height || 1080;
+    let ratio = imageObj.height / imageObj.width;
+    let width = canvasHeight / ratio;
+    ctx.current.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.current.drawImage(
+      imageObj,
+      imageWidth / 2 - imageHeight / 2,
+      0,
+      imageWidth,
+      imageHeight,
+      0,
+      0,
+      width,
+      canvasHeight
+    );
+  };
+
+  const ctx = useRef();
+  const canvasRef = useRef();
+  const [slideImageObjects, setSlideImageObjects] = useState([]);
+  const [allImageLoaded, setAllImageLoaded] = useState(false);
+
+  useEffect(() => {
+    ctx.current = canvasRef.current.getContext("2d");
+
+    const imageArray = getFittingImageArray();
+    setSlideImages([...imageArray]);
+    const imageObjects = [];
+    let loadedImageCounter = 0;
+    imageArray.forEach((item, index) => {
+      const image = new Image();
+      image.src = item;
+      imageObjects.push(image);
+      imageObjects[index].onload = function () {
+        if (loadedImageCounter === imageArray.length - 1) {
+          setAllImageLoaded(true);
+        }
+        loadedImageCounter++;
+      };
+    });
+    setSlideImageObjects([...imageObjects]);
+    setCanvasSize();
+    setZoomImageSrc(imageArray[0]);
+  }, []);
+
+  useEffect(() => {
+    window.onresize = function (e) {
+      setCanvasSize();
+      drawCanvas();
+    };
+    if (slideImageObjects.length > 0) {
+      slideImageObjects[0].onload = function () {
+        drawCanvas();
+      };
+      drawCanvas();
+    }
+    setZoomImageSrc(slideImageObjects[currentIndex]?.getAttribute("src"));
+  }, [slideImageObjects, currentIndex]);
+
+  function setCanvasSize() {
+    canvasRef.current.width = canvasRef.current.parentElement.clientWidth;
+    canvasRef.current.height = canvasRef.current.parentElement.clientHeight;
+  }
+
   return (
     <>
       <Slider
@@ -129,7 +194,8 @@ const FittingViewer = () => {
         }}
       />
       <Container className="fitting">
-        <SlideImage src={slideImages[currentIndex]} />
+        {!allImageLoaded && <h1>LOADING</h1>}
+        <canvas ref={canvasRef} height={100} width={100} />
       </Container>
       {isOpenZoomCompo && (
         <ProductImageZoom
@@ -171,7 +237,5 @@ const Container = styled.div`
     }
   }
 `;
-
-const SlideImage = styled.img``;
 
 export default FittingViewer;
