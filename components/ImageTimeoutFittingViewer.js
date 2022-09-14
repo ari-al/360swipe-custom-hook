@@ -60,20 +60,24 @@ const FittingViewer = () => {
       const mouseClientX = event?.clientX || event.touches[0]?.clientX;
 
       const diff = mouseClientX - currentPositionX;
-      let velocity = Math.sqrt(Math.abs(mouseClientX - positionX)) / time; //√(absX^2) / time
-      velocity = isFinite(velocity) ? velocity : 1;
-      const setFrameStatus = () => {
-        intentedFrame.current += Math.abs(
-          Math.ceil(diff / (deltaX / (2 * velocity)))
-        );
-        console.log(`sqrt:${Math.sqrt(Math.abs(mouseClientX - positionX))}`);
-        console.log(deltaX / (2 * velocity));
-        console.log(`velocity:${velocity}`);
-        console.log(intentedFrame);
-        lastConnectToStart();
-      };
-
       if (Math.abs(diff) > deltaX) {
+        let velocity = Math.sqrt(Math.abs(mouseClientX - positionX)) / time; //√(absX^2) / time
+        if (!isFinite(velocity) || velocity < 1) {
+          velocity = 1;
+        } else if (velocity > 5) {
+          velocity = 5;
+        }
+        const setFrameStatus = () => {
+          intentedFrame.current += Math.abs(
+            Math.ceil(diff / (deltaX / velocity))
+          );
+          console.log(`velocity:${velocity}`);
+          console.log(`sqrt:${Math.sqrt(Math.abs(mouseClientX - positionX))}`);
+          console.log(deltaX / velocity);
+          console.log(intentedFrame);
+          lastConnectToStart();
+        };
+
         clickEventDivision.current = SWIPE;
         let direction;
         if (diff > 0) {
