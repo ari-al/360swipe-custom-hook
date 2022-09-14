@@ -9,9 +9,9 @@ const CLICK = "click";
 
 function getFittingImageArray() {
   let fittingImageArray = [];
-  let i = 0;
-  for (; i < 120; i++) {
-    const path = `../fitting/SEQ.${i.toString().padStart(4, "0")}.png`;
+  let i = 1;
+  for (; i <= 120; i++) {
+    const path = `../fitting/SEQ 2.${i.toString().padStart(3, "0")}.png`;
     fittingImageArray.push(path);
   }
   return fittingImageArray;
@@ -110,6 +110,7 @@ const FittingViewer = () => {
 
   return (
     <>
+      <Container className="background"></Container>
       <Slider
         ref={sliderRef}
         cursor={swipingCursor}
@@ -180,6 +181,14 @@ const Container = styled.div`
       height: 100%;
       object-fit: cover;
     }
+  }
+  &.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: url("../background/default.png");
+    height: 100%;
   }
 `;
 
