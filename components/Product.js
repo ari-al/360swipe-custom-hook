@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import ProductInfo from "./ProductInfo";
-import FittingViewer from "./FittingViewer";
+//import FittingViewer from "./CanvasSwipeableFittingViewer";
+import FittingViewer from "./ImageTimeoutFittingViewer";
 
 const Product = (props) => {
   return (

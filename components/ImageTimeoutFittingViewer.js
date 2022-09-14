@@ -53,9 +53,13 @@ const FittingViewer = () => {
       const mouseClientX = event?.clientX || event.touches[0]?.clientX;
 
       const diff = mouseClientX - currentPositionX;
-      const startIndex = 0;
-      const lastIndex = slideImages.length - 1;
       let velocity = Math.sqrt(Math.abs(mouseClientX - positionX)) / time; //√(absX^2) / time
+      const setFrameStatus = () => {
+        intentedFrame.current += Math.abs(
+          Math.ceil(diff / (deltaX / (2 * velocity)))
+        );
+        lastConnectToStart();
+      };
 
       if (Math.abs(diff) > deltaX) {
         clickEventDivision.current = SWIPE;
@@ -70,14 +74,19 @@ const FittingViewer = () => {
         }
         setCurrentDricetion(direction);
 
-        let nextIndex = Math.ceil(currentIndex + diff * velocity);
-        if (nextIndex < startIndex) {
-          nextIndex = lastIndex;
-        } else if (nextIndex > lastIndex) {
-          nextIndex = startIndex;
+        let swipingLeft = false;
+        let swipingRight = false;
+        if (diff > 0) {
+          swipingRight = true;
+        } else if (diff < 0) {
+          swipingLeft = true;
+        }
+        if (Math.abs(diff) > deltaX) {
+          setCurrentPositionX(mouseClientX);
+          setFrameStatus();
+          redraw(swipingLeft, swipingRight);
         }
 
-        setCurrentIndex(nextIndex);
         setCurrentPositionX(mouseClientX);
       }
     }
@@ -123,6 +132,50 @@ const FittingViewer = () => {
     setZoomImageSrc(slideImages[currentIndex]);
   }, [slideImages, currentIndex]);
 
+  const intentedFrame = useRef(0);
+  const currentFrame = useRef(0);
+  const frameCount = useRef(0);
+
+  const redraw = (left = false, right = false, i = 1) => {
+    console.time("draw time");
+    const animating = () => {
+      if (frameCount.current < intentedFrame.current) {
+        window.requestAnimationFrame(function () {
+          redraw(left, right);
+        });
+      } else {
+        intentedFrame.current = 0;
+        frameCount.current = 0;
+      }
+    };
+    if (slideImages.length > 0) {
+      setCurrentIndex(currentFrame.current);
+
+      frameCount.current++;
+      if (left) {
+        currentFrame.current--;
+      }
+      if (right) {
+        currentFrame.current++;
+      }
+      console.timeEnd("draw time");
+
+      lastConnectToStart();
+      animating();
+    }
+  };
+
+  const lastConnectToStart = () => {
+    const startIndex = 0;
+    const lastIndex = slideImages.length - 1;
+    if (currentFrame.current < startIndex) {
+      currentFrame.current = lastIndex;
+    } else if (currentFrame.current > lastIndex) {
+      currentFrame.current = startIndex;
+    }
+    return currentFrame.current;
+  };
+
   return (
     <>
       <Container className="background"></Container>
@@ -141,7 +194,7 @@ const FittingViewer = () => {
         onMouseDown={handleMousedown}
         onMouseMove={handleMousemove}
         onMouseUp={handleMouseup}
-        //  onMouseOut={handleFocusout}
+        onMouseOut={handleFocusout}
         onTouchStart={handleMousedown}
         onTouchMove={handleMousemove}
         onTouchEnd={(event) => {
