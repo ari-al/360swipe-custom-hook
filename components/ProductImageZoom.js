@@ -102,6 +102,7 @@ const Container = styled.div`
       z-index: 10;
       background-color: #f1eee98a;
       box-shadow: -1px 1px #eae8e4;
+      z-index: 10;
     }
   }
 `;
