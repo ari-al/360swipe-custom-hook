@@ -275,6 +275,7 @@ const FittingViewer = () => {
       {isOpenZoomCompo && (
         <ProductImageZoom
           zoomImageSrc={zoomImageSrc}
+          backgroundSrc={background[selectedBackground]}
           isOpen={isOpenZoomCompo}
           onClose={handleClickZoomCloseButton}
         />

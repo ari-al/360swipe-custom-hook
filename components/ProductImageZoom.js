@@ -6,7 +6,7 @@ import closeButton from "../asset/images/close.png";
 import plusCursor from "../asset/images/plus.png";
 import minusCursor from "../asset/images/minus.png";
 
-export default function ProductImageZoom({ zoomImageSrc, isOpen, onClose }) {
+export default function ProductImageZoom({ zoomImageSrc, backgroundSrc, isOpen, onClose }) {
   const zoomCounter = useRef(1);
   const zoomRef = useRef();
   const [stopZoom, setStopZoom] = useState(false);
@@ -61,6 +61,7 @@ export default function ProductImageZoom({ zoomImageSrc, isOpen, onClose }) {
             >
               <div>
                 <ZoomImage src={zoomImageSrc}></ZoomImage>
+                <BackgroundImage src={backgroundSrc}></BackgroundImage>
               </div>
             </ZoomContainer>
           </TransformComponent>
@@ -108,7 +109,7 @@ const Container = styled.div`
     }
   }
 `;
-const ZoomContainer = styled.div`
+const ZoomContainer = styled.span`
   text-align: center;
   height: 100vh;
   display: flex;
@@ -120,8 +121,23 @@ const ZoomContainer = styled.div`
   &:hover {
     cursor: url(${(props) => props.cursor}), auto;
   }
+
+
 `;
 const ZoomImage = styled.img`
+  position:absolute;
+  width: 50%;
+  z-index:10;
+  @media screen and (max-width: 64rem) {
+    height: 100vh;
+    width: auto;
+    left: -50%;
+    transform: translate(25%);
+  }
+`;
+const BackgroundImage=styled.img` 
+  top: 0;
+  left:0;
   width: 50%;
   @media screen and (max-width: 64rem) {
     height: 100vh;
@@ -130,4 +146,4 @@ const ZoomImage = styled.img`
     left: -50%;
     transform: translate(25%);
   }
-`;
+`
