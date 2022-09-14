@@ -127,10 +127,10 @@ const FittingViewer = () => {
       <Container className="background"></Container>
       <Container className="zoom-button">
         <button onClick={handleSlideImageZoomIn}>
-          <Image src={zoomIn} width={48} height={48} />
+          <Image src={zoomIn} />
         </button>
         <button onClick={handeSlideImageZoomOut}>
-          <Image src={zoomOut} width={48} height={48} />
+          <Image src={zoomOut} />
         </button>
       </Container>
       <Slider
@@ -224,6 +224,7 @@ const Container = styled.div`
     z-index: 15;
     button {
       height: 48px;
+      width: 48px;
     }
     button:hover {
       &:before {
@@ -235,6 +236,14 @@ const Container = styled.div`
         z-index: 15;
         background-color: #f1eee98a;
         border-radius: 10px;
+      }
+    }
+  }
+  @media screen and (max-width: 64rem) {
+    &.zoom-button {
+      button {
+        height: 36px;
+        width: 36px;
       }
     }
   }
