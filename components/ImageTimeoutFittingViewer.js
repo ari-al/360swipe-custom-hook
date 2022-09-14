@@ -54,7 +54,8 @@ const FittingViewer = () => {
   const handleMousemove = (event, deltaX = 10) => {
     if (currentPositionX > 0) {
       endTime = new Date();
-      const time = endTime - startTime;
+      let time = endTime - startTime;
+      time = time < 1 ? 1 : time;
       const mouseClientX = event?.clientX || event.touches[0]?.clientX;
 
       const diff = mouseClientX - currentPositionX;
