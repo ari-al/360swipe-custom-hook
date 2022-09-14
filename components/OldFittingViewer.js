@@ -18,7 +18,6 @@ function getFittingImageArray() {
 }
 
 const FittingViewer = () => {
-  const [slideImages, setSlideImages] = useState([]);
   const sliderRef = useRef();
   const [positionX, setPositionX] = useState();
   const [currentPositionX, setCurrentPositionX] = useState();
@@ -29,6 +28,35 @@ const FittingViewer = () => {
   const clickEventDivision = useRef(CLICK);
   let startTime = new Date();
   let endTime = new Date();
+
+  const ctx = useRef();
+  const canvasRef = useRef();
+  const [slideImageObjects, setSlideImageObjects] = useState([]);
+  const [allImageLoaded, setAllImageLoaded] = useState(false);
+  const [slideImages, setSlideImages] = useState([]);
+
+  useEffect(() => {
+    ctx.current = canvasRef.current.getContext("2d");
+
+    const imageArray = getFittingImageArray();
+    setSlideImages([...imageArray]);
+    const imageObjects = [];
+    let loadedImageCounter = 0;
+    imageArray.forEach((item, index) => {
+      const image = new Image();
+      image.src = item;
+      imageObjects.push(image);
+      imageObjects[index].onload = function () {
+        if (loadedImageCounter === imageArray.length - 1) {
+          setAllImageLoaded(true);
+        }
+        loadedImageCounter++;
+      };
+    });
+    setSlideImageObjects([...imageObjects]);
+    setCanvasSize();
+    setZoomImageSrc(imageArray[0]);
+  }, []);
 
   const handleMousedown = useCallback((event) => {
     const clientX = event?.clientX || event.touches[0]?.clientX;
@@ -127,34 +155,6 @@ const FittingViewer = () => {
       canvasHeight
     );
   };
-
-  const ctx = useRef();
-  const canvasRef = useRef();
-  const [slideImageObjects, setSlideImageObjects] = useState([]);
-  const [allImageLoaded, setAllImageLoaded] = useState(false);
-
-  useEffect(() => {
-    ctx.current = canvasRef.current.getContext("2d");
-
-    const imageArray = getFittingImageArray();
-    setSlideImages([...imageArray]);
-    const imageObjects = [];
-    let loadedImageCounter = 0;
-    imageArray.forEach((item, index) => {
-      const image = new Image();
-      image.src = item;
-      imageObjects.push(image);
-      imageObjects[index].onload = function () {
-        if (loadedImageCounter === imageArray.length - 1) {
-          setAllImageLoaded(true);
-        }
-        loadedImageCounter++;
-      };
-    });
-    setSlideImageObjects([...imageObjects]);
-    setCanvasSize();
-    setZoomImageSrc(imageArray[0]);
-  }, []);
 
   useEffect(() => {
     window.onresize = function (e) {
