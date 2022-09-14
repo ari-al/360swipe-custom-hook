@@ -36,7 +36,6 @@ export default function ProductImageZoom({ zoomImageSrc, backgroundSrc, isOpen, 
     }
     setStopZoom(false);
   };
-
   return (
     <Container isOpen={isOpen}>
       <button className="close-button" onClick={onClose}>
@@ -60,8 +59,8 @@ export default function ProductImageZoom({ zoomImageSrc, backgroundSrc, isOpen, 
               cursor={zoomCursorSrc}
             >
               <div>
-                <ZoomImage src={zoomImageSrc}></ZoomImage>
-                <BackgroundImage src={backgroundSrc}></BackgroundImage>
+                <ZoomImage src={zoomImageSrc} background={backgroundSrc}></ZoomImage>
+                {/* <BackgroundImage ref={backgroundRef} src={backgroundSrc} onError={handleBackgroundImgError}></BackgroundImage> */}
               </div>
             </ZoomContainer>
           </TransformComponent>
@@ -109,7 +108,7 @@ const Container = styled.div`
     }
   }
 `;
-const ZoomContainer = styled.span`
+const ZoomContainer = styled.div`
   text-align: center;
   height: 100vh;
   display: flex;
@@ -125,7 +124,7 @@ const ZoomContainer = styled.span`
 
 `;
 const ZoomImage = styled.img`
-  position:absolute;
+  position:relative;
   width: 50%;
   z-index:10;
   @media screen and (max-width: 64rem) {
@@ -134,6 +133,8 @@ const ZoomImage = styled.img`
     left: -50%;
     transform: translate(25%);
   }
+  background: url(${(props) => props.background});
+  background-size: cover;
 `;
 const BackgroundImage=styled.img` 
   top: 0;
