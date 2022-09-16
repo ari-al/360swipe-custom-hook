@@ -9,6 +9,8 @@ const DEFAULT = "default";
 const GRAB = "grab";
 const SWIPE = "swipe";
 const CLICK = "click";
+const RIGHT = "right";
+const LEFT = "left";
 
 function getFittingImageArray() {
   let fittingImageArray = [];
@@ -20,22 +22,25 @@ function getFittingImageArray() {
   return fittingImageArray;
 }
 const background = {
-  none:"none",
+  none: "none",
   basic: "../background/bg1.png",
   sky: "../background/bg2.png",
   flower: "../background/bg3.png",
 };
 const FittingViewer = () => {
   const [slideImages, setSlideImages] = useState([]);
-  const [positionX, setPositionX] = useState();
+  const [initPositionX, setInitPositionX] = useState();
   const [currentPositionX, setCurrentPositionX] = useState();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentDirection, setCurrentDricetion] = useState(0);
+
   const [swipingCursor, setSwipingCursor] = useState(DEFAULT);
   const [zoomImageSrc, setZoomImageSrc] = useState("none");
   const [selectedBackground, setSelectedBackground] = useState("basic");
+
   const clickEventDivision = useRef(CLICK);
   const sliderRef = useRef();
+
   let startTime = new Date();
   let endTime = new Date();
 
@@ -46,59 +51,63 @@ const FittingViewer = () => {
 
   const handleMousedown = useCallback((event) => {
     const clientX = event?.clientX || event.touches[0]?.clientX;
-    setPositionX(clientX);
+    setInitPositionX(clientX);
     setCurrentPositionX(clientX);
     startTime = new Date(); // 시작
     setSwipingCursor(GRAB);
   }, []);
 
-  const handleMousemove = (event, deltaX = 10) => {
+  const handleMousemove = (
+    event,
+    deltaX = 10,
+    minVelocity = 1,
+    maxVelocity = 5
+  ) => {
     if (currentPositionX > 0) {
+      clickEventDivision.current = SWIPE;
+
       endTime = new Date();
       let time = endTime - startTime;
       time = time < 1 ? 1 : time;
-      console.log(`time:${time}`);
-      const mouseClientX = event?.clientX || event.touches[0]?.clientX;
 
+      const mouseClientX = event?.clientX || event.touches[0]?.clientX;
       const diff = mouseClientX - currentPositionX;
       if (Math.abs(diff) > deltaX) {
-        let velocity = Math.sqrt(Math.abs(mouseClientX - positionX)) / time; //√(absX^2) / time
-        if (!isFinite(velocity) || velocity < 1) {
-          velocity = 1;
-        } else if (velocity > 5) {
-          velocity = 5;
+        let velocity = Math.sqrt(Math.abs(mouseClientX - initPositionX)) / time; //√(absX^2) / time
+        if (!isFinite(velocity) || velocity < minVelocity) {
+          velocity = minVelocity;
+        } else if (velocity > maxVelocity) {
+          velocity = maxVelocity;
         }
-        const setFrameStatus = () => {
-          intentedFrame.current += Math.abs(
-            Math.ceil(diff / (deltaX / velocity))
-          );
-          console.log(`velocity:${velocity}`);
-          console.log(`sqrt:${Math.sqrt(Math.abs(mouseClientX - positionX))}`);
-          console.log(deltaX / velocity);
-          console.log(intentedFrame);
-          lastConnectToStart();
-        };
 
-        clickEventDivision.current = SWIPE;
         let direction;
-        if (diff > 0) {
-          direction = "right";
-        } else if (diff < 0) {
-          direction = "left";
-        }
-        if (direction !== currentDirection) {
-          setPositionX(mouseClientX);
-        }
-        setCurrentDricetion(direction);
-
         let swipingLeft = false;
         let swipingRight = false;
         if (diff > 0) {
+          direction = RIGHT;
           swipingRight = true;
         } else if (diff < 0) {
+          direction = LEFT;
           swipingLeft = true;
         }
+        if (direction !== currentDirection) {
+          setInitPositionX(mouseClientX);
+        }
+        setCurrentDricetion(direction);
+
         if (Math.abs(diff) > deltaX) {
+          const setFrameStatus = () => {
+            intentedFrame.current += Math.abs(
+              Math.ceil(diff / (deltaX / velocity))
+            );
+            console.log(`velocity:${velocity}`);
+            console.log(
+              `sqrt:${Math.sqrt(Math.abs(mouseClientX - initPositionX))}`
+            );
+            console.log(deltaX / velocity);
+            console.log(intentedFrame);
+            lastConnectToStart();
+          };
           setCurrentPositionX(mouseClientX);
           setFrameStatus();
           redraw(swipingLeft, swipingRight);
@@ -109,56 +118,11 @@ const FittingViewer = () => {
     }
   };
 
-  const handleMouseup = useCallback(() => {
-    removeSlideEvent();
-    setSwipingCursor(DEFAULT);
-  }, [positionX, slideImages, currentIndex]);
-
-  const handleFocusout = useCallback(() => {
-    removeSlideEvent();
-  }, []);
-
-  const removeSlideEvent = () => {
-    setCurrentPositionX(-1);
-  };
-
-  const [isOpenZoomCompo, setIsOpenZoomCompo] = useState(false);
-  const handleClick = () => {
-    if (clickEventDivision.current === CLICK) {
-      setIsOpenZoomCompo(true);
-    }
-    clickEventDivision.current = CLICK;
-  };
-
-  const handleClickZoomCloseButton = () => {
-    setIsOpenZoomCompo(false);
-  };
-
-  const [slideZoomRatio, setSlideZoomRatio] = useState(1);
-  const handleSlideImageZoomIn = () => {
-    if (slideZoomRatio < 1.75) {
-      setSlideZoomRatio(slideZoomRatio + 0.25);
-    }
-  };
-  const handeSlideImageZoomOut = () => {
-    if (slideZoomRatio > 1) {
-      setSlideZoomRatio(slideZoomRatio - 0.25);
-    }
-  };
-  const handleSelectBackground = (event) => {
-    setSelectedBackground(event.target.dataset.name);
-    console.log(selectedBackground);
-  };
-  useEffect(() => {
-    setZoomImageSrc(slideImages[currentIndex]);
-  }, [slideImages, currentIndex]);
-
   const intentedFrame = useRef(0);
   const currentFrame = useRef(0);
   const frameCount = useRef(0);
 
   const redraw = (left = false, right = false, i = 1) => {
-    //  console.time("draw time");
     const animating = () => {
       if (frameCount.current < intentedFrame.current) {
         window.requestAnimationFrame(function () {
@@ -179,7 +143,6 @@ const FittingViewer = () => {
       if (right) {
         currentFrame.current++;
       }
-      //  console.timeEnd("draw time");
 
       lastConnectToStart();
       animating();
@@ -195,6 +158,50 @@ const FittingViewer = () => {
       currentFrame.current = startIndex;
     }
     return currentFrame.current;
+  };
+
+  const handleMouseup = useCallback(() => {
+    removeSlideEvent();
+    setSwipingCursor(DEFAULT);
+  }, [initPositionX, slideImages, currentIndex]);
+
+  const handleFocusout = useCallback(() => {
+    removeSlideEvent();
+  }, []);
+
+  const removeSlideEvent = () => {
+    setCurrentPositionX(-1);
+  };
+
+  const [isOpenZoomCompo, setIsOpenZoomCompo] = useState(false);
+  const handleClickSlider = () => {
+    if (clickEventDivision.current === CLICK) {
+      setIsOpenZoomCompo(true);
+    }
+    clickEventDivision.current = CLICK;
+  };
+
+  useEffect(() => {
+    setZoomImageSrc(slideImages[currentIndex]);
+  }, [slideImages, currentIndex]);
+
+  const handleClickZoomCloseButton = () => {
+    setIsOpenZoomCompo(false);
+  };
+
+  const [slideZoomRatio, setSlideZoomRatio] = useState(1);
+  const handleSlideImageZoomIn = () => {
+    if (slideZoomRatio < 1.75) {
+      setSlideZoomRatio(slideZoomRatio + 0.25);
+    }
+  };
+  const handeSlideImageZoomOut = () => {
+    if (slideZoomRatio > 1) {
+      setSlideZoomRatio(slideZoomRatio - 0.25);
+    }
+  };
+  const handleSelectBackground = (event) => {
+    setSelectedBackground(event.target.dataset.name);
   };
 
   return (
@@ -240,9 +247,8 @@ const FittingViewer = () => {
           data-name={"flower"}
           className={selectedBackground === "flower" ? "active" : ""}
         ></button>
-         <button
-          style={{background:'white'
-          }}
+        <button
+          style={{ background: "white" }}
           onClick={handleSelectBackground}
           data-name={"none"}
           className={selectedBackground === "none" ? "active" : ""}
@@ -251,7 +257,7 @@ const FittingViewer = () => {
       <Slider
         ref={sliderRef}
         cursor={swipingCursor}
-        onClick={handleClick}
+        onClick={handleClickSlider}
         onMouseDown={handleMousedown}
         onMouseMove={handleMousemove}
         onMouseUp={handleMouseup}
@@ -270,11 +276,7 @@ const FittingViewer = () => {
             <>
               <SlideImage
                 src={slideImage}
-                style={
-                  currentIndex === index
-                    ? { display: "block" }
-                    : { display: "none" }
-                }
+                className={currentIndex === index ? "active" : ""}
               />
             </>
           );
@@ -385,6 +387,11 @@ const Container = styled.div`
   }
 `;
 
-const SlideImage = styled.img``;
+const SlideImage = styled.img`
+  display: none;
+  &.active {
+    display: block;
+  }
+`;
 
 export default FittingViewer;
