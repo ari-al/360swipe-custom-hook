@@ -10,12 +10,13 @@
   align-items: center;
   height: 116px;
   @media screen and (max-width: 64rem) {
-    height: unset;
+    height: 72px;
   }
 }
 
-.header-logo {
+.headerLogo {
   margin: auto;
+  font-size: 32px;
 }
 
 .nav {

@@ -11,6 +11,26 @@ yarn dev
 ```
 
 Open http://localhost:3000 with your favorite browser to see your project.
+
+### API
+
+```
+  const { handlers, currentIndex, sliderRef } = use360Swipe({
+    ...config,
+  });
+```
+
+### Configuration props and default values
+
+```
+{
+  frameNumber: 0,
+  deltaX: 10,
+  minVelocity: 1,
+  maxVelocity: 5,
+}
+```
+
 ```
 .
 ├── README.md # README file
@@ -18,8 +38,8 @@ Open http://localhost:3000 with your favorite browser to see your project.
 │ ├── fonts # lv fonts
 ├── pages
 │ ├── \_app.js # Next JS Pages
-│ ├── \_document.js  
-│ ├── index.js  
+│ ├── \_document.js
+│ ├── index.js
 ├── components # Layouts components
 ├── asset
 │ ├── images # static images

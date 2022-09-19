@@ -1,112 +1,36 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
+import use360Swipe from "../hooks/use360Swipe";
 import Image from "next/image";
-import ProductImageZoom from "./ProductImageZoom";
 import zoomIn from "../asset/images/zoom-in.png";
 import zoomOut from "../asset/images/zoom-out.png";
-
-const DEFAULT = "default";
-const GRAB = "grab";
-const SWIPE = "swipe";
-const CLICK = "click";
 
 function getFittingImageArray() {
   let fittingImageArray = [];
   let i = 1;
   for (; i <= 120; i++) {
-    const path = `../fitting/SEQ 2.${i.toString().padStart(3, "0")}.png`;
+    const path = `../fitting/fullbody.${i.toString().padStart(3, "0")}.png`;
     fittingImageArray.push(path);
   }
   return fittingImageArray;
 }
 
-const FittingViewer = () => {
-  const [slideImages, setSlideImages] = useState([]);
-  const [positionX, setPositionX] = useState();
-  const [currentPositionX, setCurrentPositionX] = useState();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentDirection, setCurrentDricetion] = useState(0);
-  const [swipingCursor, setSwipingCursor] = useState(DEFAULT);
-  const [zoomImageSrc, setZoomImageSrc] = useState("none");
-  const clickEventDivision = useRef(CLICK);
-  const sliderRef = useRef();
-  let startTime = new Date();
-  let endTime = new Date();
+const FittingViewer = (props) => {
+  const config = {
+    minVelocity: 1,
+    maxVelocity: 10,
+    frameNumber: 119,
+    deltaX: 10,
+  };
+  const { handlers, currentIndex, sliderRef } = use360Swipe({
+    ...config,
+  });
 
-  useEffect(() => {
+  const [slideImages, setSlideImages] = useState(() => {
     const imageArray = getFittingImageArray();
-    setSlideImages([...imageArray]);
-  }, []);
-
-  const handleMousedown = useCallback((event) => {
-    const clientX = event?.clientX || event.touches[0]?.clientX;
-    setPositionX(clientX);
-    setCurrentPositionX(clientX);
-    startTime = new Date(); // 시작
-    setSwipingCursor(GRAB);
-  }, []);
-
-  const handleMousemove = (event, deltaX = 10) => {
-    if (currentPositionX > 0) {
-      endTime = new Date();
-      const time = endTime - startTime;
-      const mouseClientX = event?.clientX || event.touches[0]?.clientX;
-
-      const diff = mouseClientX - currentPositionX;
-      const startIndex = 0;
-      const lastIndex = slideImages.length - 1;
-      let velocity = Math.sqrt(Math.abs(mouseClientX - positionX)) / time; //√(absX^2) / time
-
-      if (Math.abs(diff) > deltaX) {
-        clickEventDivision.current = SWIPE;
-        let direction;
-        if (diff > 0) {
-          direction = "right";
-        } else if (diff < 0) {
-          direction = "left";
-        }
-        if (direction !== currentDirection) {
-          setPositionX(mouseClientX);
-        }
-        setCurrentDricetion(direction);
-
-        let nextIndex = Math.ceil(currentIndex + diff * velocity);
-        if (nextIndex < startIndex) {
-          nextIndex = lastIndex;
-        } else if (nextIndex > lastIndex) {
-          nextIndex = startIndex;
-        }
-
-        setCurrentIndex(nextIndex);
-        setCurrentPositionX(mouseClientX);
-      }
-    }
-  };
-
-  const handleMouseup = useCallback(() => {
-    removeSlideEvent();
-    setSwipingCursor(DEFAULT);
-  }, [positionX, slideImages, currentIndex]);
-
-  const handleFocusout = useCallback(() => {
-    removeSlideEvent();
-  }, []);
-
-  const removeSlideEvent = () => {
-    setCurrentPositionX(-1);
-  };
-
-  const [isOpenZoomCompo, setIsOpenZoomCompo] = useState(false);
-  const handleClick = () => {
-    if (clickEventDivision.current === CLICK) {
-      setIsOpenZoomCompo(true);
-    }
-    clickEventDivision.current = CLICK;
-  };
-
-  const handleClickZoomCloseButton = () => {
-    setIsOpenZoomCompo(false);
-  };
+    return [...imageArray];
+  });
 
   const [slideZoomRatio, setSlideZoomRatio] = useState(1);
   const handleSlideImageZoomIn = () => {
@@ -119,13 +43,9 @@ const FittingViewer = () => {
       setSlideZoomRatio(slideZoomRatio - 0.25);
     }
   };
-  useEffect(() => {
-    setZoomImageSrc(slideImages[currentIndex]);
-  }, [slideImages, currentIndex]);
-
   return (
     <>
-      <Container className="background"></Container>
+      <Slider ref={sliderRef} {...handlers} />
       <Container className="zoom-button">
         <button onClick={handleSlideImageZoomIn}>
           <Image src={zoomIn} />
@@ -134,49 +54,23 @@ const FittingViewer = () => {
           <Image src={zoomOut} />
         </button>
       </Container>
-      <Slider
-        ref={sliderRef}
-        cursor={swipingCursor}
-        onClick={handleClick}
-        onMouseDown={handleMousedown}
-        onMouseMove={handleMousemove}
-        onMouseUp={handleMouseup}
-        //  onMouseOut={handleFocusout}
-        onTouchStart={handleMousedown}
-        onTouchMove={handleMousemove}
-        onTouchEnd={(event) => {
-          event.preventDefault();
-          handleMouseup();
-          handleClick();
-        }}
-      />
       <Container className="fitting" zoomRatio={slideZoomRatio}>
         {slideImages.map((slideImage, index) => {
+          const elKey = `slide-${index}`;
           return (
-            <>
-              <SlideImage
-                src={slideImage}
-                style={
-                  currentIndex === index
-                    ? { display: "block" }
-                    : { display: "none" }
-                }
-              />
-            </>
+            <SlideImage
+              key={elKey}
+              src={slideImage}
+              className={currentIndex === index ? "active" : ""}
+            />
           );
         })}
       </Container>
-      {isOpenZoomCompo && (
-        <ProductImageZoom
-          zoomImageSrc={zoomImageSrc}
-          isOpen={isOpenZoomCompo}
-          onClose={handleClickZoomCloseButton}
-        />
-      )}
     </>
   );
 };
 
+FittingViewer.propTypes = {};
 const Slider = styled.div`
   width: 100%;
   height: 100%;
@@ -191,7 +85,6 @@ const Slider = styled.div`
   -ms-user-select: none;
   user-select: none;
 `;
-
 const Container = styled.div`
   &.fitting {
     position: absolute;
@@ -212,16 +105,16 @@ const Container = styled.div`
     top: 0;
     left: 0;
     width: 100%;
-    background: url("../background/default.png");
+    transform: scale(${(props) => props.zoomRatio});
+    background-size: cover;
     height: 100%;
   }
   &.zoom-button {
     display: flex;
     flex-flow: column;
     position: absolute;
-    top: 50%;
+    bottom: 4%;
     left: 4%;
-    transform: translate(0, -50%);
     z-index: 15;
     button {
       height: 48px;
@@ -240,6 +133,25 @@ const Container = styled.div`
       }
     }
   }
+  &.background-button {
+    position: absolute;
+    z-index: 15;
+    bottom: 4%;
+    right: 4%;
+    display: flex;
+    flex-flow: column;
+    row-gap: 4px;
+    button {
+      width: 40px;
+      height: 40px;
+      opacity: 0.5;
+      border: 1px solid rgba(192, 192, 192, 0.5);
+      border-radius: 9999px;
+      &.active {
+        opacity: 1;
+      }
+    }
+  }
   @media screen and (max-width: 64rem) {
     &.zoom-button {
       button {
@@ -250,6 +162,11 @@ const Container = styled.div`
   }
 `;
 
-const SlideImage = styled.img``;
+const SlideImage = styled.img`
+  display: none;
+  &.active {
+    display: block;
+  }
+`;
 
 export default FittingViewer;

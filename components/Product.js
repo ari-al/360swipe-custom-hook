@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import ProductInfo from "./ProductInfo";
 //import FittingViewer from "./CanvasSwipeableFittingViewer";
-import FittingViewer from "./ImageTimeoutFittingViewer";
+import FittingViewer from "./FittingViewer";
 
 const Product = (props) => {
   return (
@@ -9,9 +8,6 @@ const Product = (props) => {
       <Container className="product">
         <Container className="product-left">
           <FittingViewer />
-        </Container>
-        <Container className="product-right">
-          <ProductInfo />
         </Container>
       </Container>
     </section>
@@ -27,7 +23,8 @@ const Container = styled.div`
   }
   &.product-left {
     position: relative;
-    flex: 1 0 0;
+    width: 50%;
+    margin: auto;
     overflow: hidden;
   }
   &.product-left:before {
@@ -36,15 +33,12 @@ const Container = styled.div`
     width: 100%;
     padding-top: 100%;
   }
-  &.product-right {
-    flex: 1 0 0;
-  }
   @media screen and (max-width: 64rem) {
     &.product {
       display: block;
     }
-    &.product-right {
-      background: white;
+    &.product-left {
+      width: 100%;
     }
   }
 `;

@@ -1,10 +1,7 @@
 import { createGlobalStyle } from "styled-components";
-import reset from "styled-reset";
 import "../asset/style.css";
 
 const GlobalStyles = createGlobalStyle` 
-  ${reset}
-
   body{
     font-size: 16px;
     letter-spacing: .025rem;
@@ -38,7 +35,13 @@ const GlobalStyles = createGlobalStyle`
     padding: 0;
     cursor: pointer;
   }
-
+  code {
+    font-family: Consolas,"courier new";
+    color: crimson;
+    background-color: #f1f1f1;
+    padding: 2px;
+    font-size: 105%;
+  }
     
 `;
 

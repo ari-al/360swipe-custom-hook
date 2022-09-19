@@ -15,21 +15,9 @@ const Layout = ({ children }) => {
       </Head>
       <header className={styles.header}>
         <div className={styles.headerLogo}>
-          <div className={styles.pcOnly}>
-            <LVLogo />
+          <div>
+            <span>360 VIEWER</span>
           </div>
-          <div className={styles.mobileOnly}>
-            <MobileLVLogo />
-          </div>
-        </div>
-        <div>
-          <nav className={classnames(styles.nav, styles.pcOnly)}>
-            <ul>
-              <li>NEW</li>
-              <li>MEN</li>
-              <li>WOMEN</li>
-            </ul>
-          </nav>
         </div>
       </header>
       <main>{children}</main>
